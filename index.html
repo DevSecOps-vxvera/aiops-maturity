@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Evaluador de madurez AIOps para escenarios de red con niveles L0–L5 y roadmap automático.">
+  <meta name="theme-color" content="#071526">
+  <title>Evaluador de Madurez AIOps para Redes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Inicio">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span><b>AIOps</b><small>Network Maturity Lab</small></span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a href="#metodologia">Metodología</a>
+      <a href="#evaluacion">Evaluación</a>
+      <a href="#resultados">Resultados</a>
+    </nav>
+    <button class="btn btn-small btn-ghost" id="btnPrint" type="button">Imprimir informe</button>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow">Diagnóstico por escenarios · L0—L5</p>
+        <h1>Convierta la madurez AIOps en una <em>ruta de implementación</em>.</h1>
+        <p class="lead">Evalúe capacidades reales de red, identifique el nivel seguro de autonomía y obtenga un roadmap priorizado con evidencia y métricas de éxito.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#evaluacion">Iniciar evaluación</a>
+          <button class="btn btn-secondary" id="btnDemo" type="button">Cargar ejemplo del laboratorio</button>
+        </div>
+        <div class="principles" aria-label="Principios">
+          <span>Por escenario</span><span>Basado en evidencia</span><span>Con controles de IA</span>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="Escala de madurez AIOps de L0 a L5">
+        <div class="orbit orbit-1"></div><div class="orbit orbit-2"></div>
+        <div class="level-stack">
+          <div style="--n:5"><b>L5</b><span>Autonomía</span></div>
+          <div style="--n:4"><b>L4</b><span>Ciclo cerrado</span></div>
+          <div style="--n:3"><b>L3</b><span>Automatización asistida</span></div>
+          <div style="--n:2"><b>L2</b><span>Análisis inteligente</span></div>
+          <div style="--n:1"><b>L1</b><span>Visibilidad</span></div>
+          <div style="--n:0"><b>L0</b><span>Operación manual</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section methodology" id="metodologia">
+      <div class="section-heading">
+        <p class="eyebrow">01 · Metodología</p>
+        <h2>Una evaluación que evita promedios engañosos</h2>
+        <p>La herramienta adapta los niveles de Redes Autónomas de TM Forum, el ciclo cerrado de ETSI ZSM y los controles de riesgo del NIST AI RMF.</p>
+      </div>
+
+      <div class="method-grid">
+        <article class="method-card accent-cyan">
+          <span class="method-number">01</span><h3>Evalúe un escenario</h3>
+          <p>Congestión, Wi‑Fi, caída de interfaz, degradación API/DB u otro caso operativo concreto.</p>
+        </article>
+        <article class="method-card accent-violet">
+          <span class="method-number">02</span><h3>Califique evidencia</h3>
+          <p>Diez dimensiones desde telemetría y topología hasta automatización, validación y gobierno.</p>
+        </article>
+        <article class="method-card accent-green">
+          <span class="method-number">03</span><h3>Aplique compuertas</h3>
+          <p>La autonomía queda limitada si faltan capacidades críticas, aunque el promedio técnico sea alto.</p>
+        </article>
+        <article class="method-card accent-orange">
+          <span class="method-number">04</span><h3>Trace el roadmap</h3>
+          <p>Las brechas se convierten en iniciativas ordenadas por impacto, urgencia y horizonte.</p>
+        </article>
+      </div>
+
+      <div class="level-table-wrap">
+        <table class="level-table">
+          <thead><tr><th>Nivel</th><th>Capacidad dominante</th><th>Evidencia esperada</th></tr></thead>
+          <tbody>
+            <tr><td><span class="level-pill l0">L0</span></td><td>Manual</td><td>Diagnóstico reactivo, fuentes aisladas y dependencia del experto.</td></tr>
+            <tr><td><span class="level-pill l1">L1</span></td><td>Visibilidad</td><td>Inventario, telemetría centralizada, umbrales y línea base inicial.</td></tr>
+            <tr><td><span class="level-pill l2">L2</span></td><td>Inteligencia asistida</td><td>Anomalías, correlación, topología y causa probable verificable.</td></tr>
+            <tr><td><span class="level-pill l3">L3</span></td><td>Automatización supervisada</td><td>Recomendación, aprobación humana, playbook y auditoría.</td></tr>
+            <tr><td><span class="level-pill l4">L4</span></td><td>Autonomía condicionada</td><td>Acción automática acotada, validación y rollback.</td></tr>
+            <tr><td><span class="level-pill l5">L5</span></td><td>Autonomía por intención</td><td>Optimización extremo a extremo orientada a objetivos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="method-note"><b>Regla de cálculo:</b> se obtiene un índice ponderado y luego se aplican compuertas de capacidad. El resultado oficial del escenario es el nivel seguro alcanzado; el índice técnico se muestra por separado.</p>
+    </section>
+
+    <section class="section assessment" id="evaluacion">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">02 · Evaluación</p><h2>Califique la situación actual</h2></div>
+        <div class="toolbar">
+          <button class="btn btn-ghost" id="btnExport" type="button">Exportar JSON</button>
+          <label class="btn btn-ghost file-label">Importar JSON<input id="fileImport" type="file" accept="application/json"></label>
+          <button class="btn btn-danger-ghost" id="btnReset" type="button">Reiniciar</button>
+        </div>
+      </div>
+
+      <div class="identity-card">
+        <label>Organización<input id="orgName" type="text" placeholder="Ej. Operadora / Empresa"></label>
+        <label>Responsable<input id="assessor" type="text" placeholder="Nombre del evaluador"></label>
+        <label>Fecha<input id="assessmentDate" type="date"></label>
+      </div>
+
+      <div class="scenario-layout">
+        <aside class="scenario-sidebar">
+          <div class="sidebar-title"><h3>Escenarios</h3><button id="btnAddScenario" class="icon-btn" type="button" title="Agregar escenario" aria-label="Agregar escenario">+</button></div>
+          <div id="scenarioList" class="scenario-list"></div>
+          <p class="microcopy">Cada escenario se evalúa de forma independiente. Puede comparar sus niveles al final.</p>
+        </aside>
+
+        <div class="scenario-editor">
+          <div class="scenario-config">
+            <label class="wide">Nombre del escenario<input id="scenarioName" type="text"></label>
+            <label>Criticidad<select id="scenarioCriticality"><option>Alta</option><option>Media</option><option>Baja</option></select></label>
+            <label>Nivel objetivo<select id="scenarioTarget"><option value="1">L1</option><option value="2">L2</option><option value="3" selected>L3</option><option value="4">L4</option><option value="5">L5</option></select></label>
+            <label class="full">Objetivo operacional<textarea id="scenarioObjective" rows="2" placeholder="¿Qué resultado operacional se desea proteger o mejorar?"></textarea></label>
+          </div>
+
+          <div class="assessment-legend">
+            <span>Seleccione el nivel respaldado por evidencia:</span>
+            <div><b>L0</b> inexistente</div><div><b>L1</b> inicial</div><div><b>L2</b> repetible</div><div><b>L3</b> integrado</div><div><b>L4</b> automatizado</div><div><b>L5</b> optimizado</div>
+          </div>
+          <div id="questionList" class="question-list"></div>
+          <div class="editor-footer">
+            <span id="completionText">0 de 10 dimensiones respondidas</span>
+            <div class="progress"><i id="completionBar"></i></div>
+            <button id="btnDeleteScenario" class="text-danger" type="button">Eliminar escenario</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section results" id="resultados">
+      <div class="section-heading">
+        <p class="eyebrow">03 · Resultados</p>
+        <h2>Madurez, brechas y próximo movimiento</h2>
+        <p id="resultIntro">Complete la evaluación para generar el diagnóstico.</p>
+      </div>
+
+      <div class="result-summary">
+        <article class="score-card">
+          <span>Madurez consolidada</span>
+          <div class="big-level" id="overallLevel">—</div>
+          <b id="overallLabel">Sin datos suficientes</b>
+          <p id="overallNote">Se calcula con escenarios completos.</p>
+        </article>
+        <article class="metric-card"><span>Índice técnico</span><b id="technicalIndex">—</b><small>Promedio ponderado / 5</small></article>
+        <article class="metric-card"><span>Escenarios evaluados</span><b id="evaluatedCount">0</b><small id="scenarioCountNote">de 1 configurado</small></article>
+        <article class="metric-card"><span>Brechas prioritarias</span><b id="priorityGapCount">0</b><small>hacia el nivel objetivo</small></article>
+      </div>
+
+      <div class="charts-grid">
+        <article class="chart-card">
+          <div class="card-heading"><div><p class="eyebrow">Perfil de capacidades</p><h3>Radar de madurez</h3></div><select id="radarScenario" aria-label="Escenario del gráfico"></select></div>
+          <div id="radarChart" class="radar-chart" role="img" aria-label="Gráfico radar de capacidades"></div>
+        </article>
+        <article class="chart-card">
+          <div class="card-heading"><div><p class="eyebrow">Comparación</p><h3>Nivel por escenario</h3></div></div>
+          <div id="scenarioBars" class="scenario-bars"></div>
+          <div class="bar-legend"><span><i class="current-dot"></i>Actual</span><span><i class="target-dot"></i>Objetivo</span></div>
+        </article>
+      </div>
+
+      <div class="diagnosis-grid">
+        <article class="panel">
+          <div class="panel-heading"><p class="eyebrow">Lectura ejecutiva</p><h3>Hallazgos principales</h3></div>
+          <div id="findingsList" class="finding-list"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-heading"><p class="eyebrow">Evidencia</p><h3>Qué debe validar</h3></div>
+          <div id="evidenceList" class="evidence-list"></div>
+        </article>
+      </div>
+
+      <div class="roadmap-panel">
+        <div class="roadmap-heading"><div><p class="eyebrow">Roadmap automático</p><h3>Ruta priorizada de implementación</h3></div><p>Las iniciativas se ordenan por brecha, criticidad y dependencia.</p></div>
+        <div id="roadmap" class="roadmap"></div>
+      </div>
+    </section>
+
+    <section class="section references">
+      <div><p class="eyebrow">Referencias</p><h2>Fundamentos del modelo</h2></div>
+      <div class="reference-links">
+        <a href="https://www.tmforum.org/topics/an-resources/" target="_blank" rel="noreferrer"><b>TM Forum</b><span>Autonomous Networks Levels e IG1252 ↗</span></a>
+        <a href="https://www.etsi.org/technologies/zero-touch-network-service-management" target="_blank" rel="noreferrer"><b>ETSI ZSM</b><span>Ciclo cerrado y gestión zero-touch ↗</span></a>
+        <a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noreferrer"><b>NIST AI RMF</b><span>Govern · Map · Measure · Manage ↗</span></a>
+      </div>
+      <p class="disclaimer">Herramienta educativa de diagnóstico. No constituye una certificación oficial de TM Forum, ETSI o NIST.</p>
+    </section>
+  </main>
+
+  <footer><span>Evaluador AIOps para Redes</span><span>Los datos permanecen en este navegador.</span></footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
