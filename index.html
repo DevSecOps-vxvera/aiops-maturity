@@ -111,8 +111,14 @@
         <aside class="scenario-sidebar">
           <div class="sidebar-title"><h3>Escenarios</h3><span id="scenarioTotal" class="scenario-total">1</span></div>
           <div class="scenario-actions">
-            <button id="btnOpenCatalog" class="btn-catalog" type="button"><b>＋</b> Catálogo recomendado</button>
-            <button id="btnAddScenario" class="btn-custom" type="button"><b>＋</b> Escenario personalizado</button>
+            <button id="btnAddRecommended" class="scenario-action scenario-action-primary" type="button">
+              <span class="scenario-action-icon">8</span>
+              <span><strong>Catálogo sugerido</strong><small>Agregar los 8 escenarios recomendados</small></span>
+            </button>
+            <button id="btnAddScenario" class="scenario-action scenario-action-secondary" type="button">
+              <span class="scenario-action-icon">＋</span>
+              <span><strong>Nuevo escenario</strong><small>Crear un caso personalizado</small></span>
+            </button>
           </div>
           <div id="scenarioList" class="scenario-list"></div>
           <p class="microcopy">Agregue los escenarios aplicables. Cada uno se evalúa de forma independiente.</p>
@@ -200,24 +206,6 @@
   </main>
 
   <footer><span>Evaluador AIOps para Redes</span><span>Los datos permanecen en este navegador.</span></footer>
-
-  <div class="catalog-modal" id="catalogModal" aria-hidden="true">
-    <div class="catalog-dialog" role="dialog" aria-modal="true" aria-labelledby="catalogTitle">
-      <div class="catalog-header">
-        <div><p class="eyebrow">Catálogo inicial</p><h2 id="catalogTitle">Ocho escenarios recomendados</h2><p>Seleccione los casos que correspondan a su operación. Después puede agregar escenarios personalizados.</p></div>
-        <button id="btnCloseCatalog" class="modal-close" type="button" aria-label="Cerrar catálogo">×</button>
-      </div>
-      <div class="catalog-toolbar">
-        <label class="catalog-select-all"><input id="catalogSelectAll" type="checkbox"> Seleccionar todos los disponibles</label>
-        <span id="catalogStatus">0 seleccionados</span>
-      </div>
-      <div id="catalogList" class="catalog-list"></div>
-      <div class="catalog-footer">
-        <button id="btnCancelCatalog" class="btn btn-ghost" type="button">Cancelar</button>
-        <button id="btnAddCatalog" class="btn btn-primary" type="button">Agregar seleccionados</button>
-      </div>
-    </div>
-  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>

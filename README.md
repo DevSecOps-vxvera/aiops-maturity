@@ -6,7 +6,7 @@ Aplicación web estática para evaluar escenarios de operación de red mediante 
 
 - Evaluación independiente por escenario.
 - Catálogo de ocho escenarios recomendados para redes.
-- Selección individual o masiva de escenarios del catálogo.
+- Botón directo para agregar automáticamente los ocho escenarios sugeridos.
 - Creación ilimitada de escenarios personalizados.
 - Diez dimensiones de capacidad AIOps.
 - Índice técnico ponderado y nivel seguro con compuertas.

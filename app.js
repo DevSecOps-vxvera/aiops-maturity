@@ -40,7 +40,7 @@ const HORIZONS = [
   {title:"6—12 meses",subtitle:"Cerrar el ciclo"}
 ];
 
-const STORAGE_KEY = "aiops-network-maturity-v1";
+const STORAGE_KEY = "aiops-network-maturity-v3";
 const today = new Date().toISOString().slice(0,10);
 let selectedScenarioId = null;
 let state = loadState() || freshState();
@@ -93,48 +93,25 @@ function renderMeta(){
 }
 function renderSidebar(){
   document.querySelector("#scenarioTotal").textContent=state.scenarios.length;
+  const catalogAdded=new Set(state.scenarios.map(s=>s.templateId).filter(Boolean)).size;
+  const recommendedButton=document.querySelector("#btnAddRecommended");
+  recommendedButton.disabled=catalogAdded===SCENARIO_CATALOG.length;
+  recommendedButton.querySelector("strong").textContent=catalogAdded===SCENARIO_CATALOG.length?"Catálogo sugerido agregado":"Catálogo sugerido";
+  recommendedButton.querySelector("small").textContent=catalogAdded===SCENARIO_CATALOG.length?"Los 8 escenarios están disponibles":"Agregar los 8 escenarios recomendados";
   const box=document.querySelector("#scenarioList");box.innerHTML=state.scenarios.map(s=>{const r=calculate(s);return `<button class="scenario-tab ${s.id===selectedScenarioId?"active":""}" data-id="${s.id}" type="button"><b>${esc(short(s.name,34))}</b><span>${s.criticality} · ${r.count}/10 <i class="mini-level">${r.level===null?"Pendiente":"L"+r.level}</i></span></button>`}).join("");
   box.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{selectedScenarioId=btn.dataset.id;renderAll()});
 }
 
-function renderCatalog(){
+function addRecommendedScenarios(){
+  const onlyScenario=state.scenarios.length===1?state.scenarios[0]:null;
+  const isEmptyLegacy=onlyScenario&&!onlyScenario.templateId&&calculate(onlyScenario).count===0;
+  if(isEmptyLegacy)state.scenarios=[];
   const existing=new Set(state.scenarios.map(s=>s.templateId).filter(Boolean));
-  const box=document.querySelector("#catalogList");
-  box.innerHTML=SCENARIO_CATALOG.map((item,index)=>{
-    const added=existing.has(item.id);
-    return `<label class="catalog-item ${added?"catalog-added":""}"><input class="catalog-check" type="checkbox" value="${item.id}" ${added?"disabled":""}><span class="catalog-index">${String(index+1).padStart(2,"0")}</span><span class="catalog-copy"><b>${esc(item.name)}</b><small>${esc(item.description)}</small><span class="signal-tags">${item.signals.map(x=>`<i>${esc(x)}</i>`).join("")}</span></span><strong>${added?"Agregado":"L"+item.target}</strong></label>`;
-  }).join("");
-  box.querySelectorAll(".catalog-check").forEach(input=>input.addEventListener("change",updateCatalogStatus));
-  document.querySelector("#catalogSelectAll").checked=false;
-  updateCatalogStatus();
-}
-
-function updateCatalogStatus(){
-  const checked=[...document.querySelectorAll(".catalog-check:checked")];
-  document.querySelector("#catalogStatus").textContent=`${checked.length} seleccionado${checked.length===1?"":"s"}`;
-  document.querySelector("#btnAddCatalog").disabled=!checked.length;
-}
-
-function openCatalog(){
-  renderCatalog();
-  document.querySelector("#catalogModal").classList.add("open");
-  document.querySelector("#catalogModal").setAttribute("aria-hidden","false");
-  document.body.classList.add("modal-open");
-}
-
-function closeCatalog(){
-  document.querySelector("#catalogModal").classList.remove("open");
-  document.querySelector("#catalogModal").setAttribute("aria-hidden","true");
-  document.body.classList.remove("modal-open");
-}
-
-function addCatalogScenarios(){
-  const ids=[...document.querySelectorAll(".catalog-check:checked")].map(x=>x.value);
-  if(!ids.length)return;
-  const added=ids.map(id=>scenarioFromTemplate(SCENARIO_CATALOG.find(x=>x.id===id)));
+  const added=SCENARIO_CATALOG.filter(item=>!existing.has(item.id)).map(scenarioFromTemplate);
+  if(!added.length){toast("Los ocho escenarios ya están agregados");return}
   state.scenarios.push(...added);
   selectedScenarioId=added[0].id;
-  closeCatalog();renderAll();toast(`${added.length} escenario${added.length===1?" agregado":"s agregados"}`);
+  renderAll();toast("Ocho escenarios sugeridos disponibles");
 }
 function renderEditor(){
   const s=active();if(!s)return;
@@ -208,13 +185,7 @@ function bind(){
   [["scenarioName","name"],["scenarioCriticality","criticality"],["scenarioTarget","target"],["scenarioObjective","objective"]].forEach(([id,key])=>document.querySelector("#"+id).addEventListener("input",e=>{active()[key]=key==="target"?Number(e.target.value):e.target.value;renderSidebar();renderResults();save()}));
   document.querySelector("#radarScenario").addEventListener("change",renderRadar);
   document.querySelector("#btnAddScenario").onclick=()=>{const s=freshScenario("Nuevo escenario de red");state.scenarios.push(s);selectedScenarioId=s.id;renderAll();toast("Escenario agregado")};
-  document.querySelector("#btnOpenCatalog").onclick=openCatalog;
-  document.querySelector("#btnCloseCatalog").onclick=closeCatalog;
-  document.querySelector("#btnCancelCatalog").onclick=closeCatalog;
-  document.querySelector("#btnAddCatalog").onclick=addCatalogScenarios;
-  document.querySelector("#catalogModal").addEventListener("click",e=>{if(e.target.id==="catalogModal")closeCatalog()});
-  document.querySelector("#catalogSelectAll").addEventListener("change",e=>{document.querySelectorAll(".catalog-check:not(:disabled)").forEach(x=>x.checked=e.target.checked);updateCatalogStatus()});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCatalog()});
+  document.querySelector("#btnAddRecommended").onclick=addRecommendedScenarios;
   document.querySelector("#btnDeleteScenario").onclick=()=>{if(state.scenarios.length<2)return;if(!confirm("¿Eliminar este escenario y sus respuestas?"))return;state.scenarios=state.scenarios.filter(s=>s.id!==selectedScenarioId);selectedScenarioId=state.scenarios[0].id;renderAll();toast("Escenario eliminado")};
   document.querySelector("#btnReset").onclick=()=>{if(!confirm("¿Reiniciar toda la evaluación?"))return;state=freshState();renderAll();toast("Evaluación reiniciada")};
   document.querySelector("#btnPrint").onclick=()=>window.print();
