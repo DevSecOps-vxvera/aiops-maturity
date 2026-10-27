@@ -109,9 +109,13 @@
 
       <div class="scenario-layout">
         <aside class="scenario-sidebar">
-          <div class="sidebar-title"><h3>Escenarios</h3><button id="btnAddScenario" class="icon-btn" type="button" title="Agregar escenario" aria-label="Agregar escenario">+</button></div>
+          <div class="sidebar-title"><h3>Escenarios</h3><span id="scenarioTotal" class="scenario-total">1</span></div>
+          <div class="scenario-actions">
+            <button id="btnOpenCatalog" class="btn-catalog" type="button"><b>＋</b> Catálogo recomendado</button>
+            <button id="btnAddScenario" class="btn-custom" type="button"><b>＋</b> Escenario personalizado</button>
+          </div>
           <div id="scenarioList" class="scenario-list"></div>
-          <p class="microcopy">Cada escenario se evalúa de forma independiente. Puede comparar sus niveles al final.</p>
+          <p class="microcopy">Agregue los escenarios aplicables. Cada uno se evalúa de forma independiente.</p>
         </aside>
 
         <div class="scenario-editor">
@@ -196,6 +200,24 @@
   </main>
 
   <footer><span>Evaluador AIOps para Redes</span><span>Los datos permanecen en este navegador.</span></footer>
+
+  <div class="catalog-modal" id="catalogModal" aria-hidden="true">
+    <div class="catalog-dialog" role="dialog" aria-modal="true" aria-labelledby="catalogTitle">
+      <div class="catalog-header">
+        <div><p class="eyebrow">Catálogo inicial</p><h2 id="catalogTitle">Ocho escenarios recomendados</h2><p>Seleccione los casos que correspondan a su operación. Después puede agregar escenarios personalizados.</p></div>
+        <button id="btnCloseCatalog" class="modal-close" type="button" aria-label="Cerrar catálogo">×</button>
+      </div>
+      <div class="catalog-toolbar">
+        <label class="catalog-select-all"><input id="catalogSelectAll" type="checkbox"> Seleccionar todos los disponibles</label>
+        <span id="catalogStatus">0 seleccionados</span>
+      </div>
+      <div id="catalogList" class="catalog-list"></div>
+      <div class="catalog-footer">
+        <button id="btnCancelCatalog" class="btn btn-ghost" type="button">Cancelar</button>
+        <button id="btnAddCatalog" class="btn btn-primary" type="button">Agregar seleccionados</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>

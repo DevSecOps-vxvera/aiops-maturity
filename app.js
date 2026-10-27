@@ -22,6 +22,17 @@ const LEVELS = [
   {n:5,name:"Autonomía por intención",summary:"La red optimiza resultados extremo a extremo según objetivos y restricciones."}
 ];
 
+const SCENARIO_CATALOG = [
+  {id:"wan-congestion",name:"Congestión WAN o Internet",criticality:"Alta",target:3,description:"Saturación, colas y descarte de paquetes que degradan aplicaciones y experiencia.",objective:"Detectar congestión, identificar el tráfico causante y recomendar QoS, redistribución o ampliación de capacidad.",signals:["SNMP","NetFlow/IPFIX","RTT","Pérdida","Jitter"]},
+  {id:"interface-instability",name:"Caída o inestabilidad de interfaz",criticality:"Alta",target:4,description:"Interfaz caída, flapping, errores físicos o pérdida de redundancia.",objective:"Correlacionar la falla con los servicios afectados, aplicar failover y validar la recuperación.",signals:["Syslog","SNMP traps","CRC","Routing","Topología"]},
+  {id:"latency-loss-jitter",name:"Latencia, pérdida y jitter elevados",criticality:"Alta",target:3,description:"La conectividad existe, pero el rendimiento y la experiencia se degradan.",objective:"Diferenciar si la causa está en la red, proveedor, servidor o aplicación y reducir el tiempo de diagnóstico.",signals:["RTT","Ping","Jitter","TCP","Tiempo de respuesta"]},
+  {id:"wifi-degradation",name:"Degradación de Wi‑Fi",criticality:"Media",target:3,description:"Interferencia, cobertura insuficiente, canal congestionado o punto de acceso saturado.",objective:"Identificar interferencia, mala cobertura, saturación, problemas de roaming o autenticación.",signals:["RSSI","SNR","Canal","Clientes","Retransmisiones"]},
+  {id:"api-database",name:"Degradación de API, aplicación o base de datos",criticality:"Alta",target:3,description:"Lentitud o errores originados en una dependencia entre red, API, servicio y base de datos.",objective:"Correlacionar trazas, errores HTTP, RTT y consultas para localizar la dependencia causante.",signals:["OpenTelemetry","HTTP","SQL","Logs","CPU/Memoria"]},
+  {id:"capacity-saturation",name:"Saturación de capacidad",criticality:"Media",target:3,description:"Un dispositivo o servicio se aproxima al límite de recursos o sesiones.",objective:"Predecir agotamiento de capacidad y recomendar escalamiento antes de incumplir el SLO.",signals:["CPU","Memoria","Sesiones","Throughput","Disco"]},
+  {id:"configuration-change",name:"Incidente por cambio de configuración",criticality:"Alta",target:3,description:"Un cambio en firewall, routing, QoS, SD‑WAN o DNS provoca una degradación.",objective:"Relacionar temporalmente el cambio con el incidente, estimar impacto y recomendar rollback.",signals:["Change log","Syslog","Config diff","Routing","Antes/después"]},
+  {id:"critical-network-services",name:"Falla de servicios esenciales de red",criticality:"Alta",target:3,description:"Falla común en DNS, DHCP, VPN, firewall, autenticación o NTP.",objective:"Identificar el servicio compartido que afecta a múltiples usuarios o aplicaciones y restaurarlo con seguridad.",signals:["DNS/DHCP","VPN","Firewall","Autenticación","NTP"]}
+];
+
 const HORIZONS = [
   {title:"0—30 días",subtitle:"Fundar y medir"},
   {title:"31—90 días",subtitle:"Integrar y correlacionar"},
@@ -36,14 +47,17 @@ let state = loadState() || freshState();
 
 function uid(){return "s_"+Math.random().toString(36).slice(2,10)}
 function blankAnswers(){return Object.fromEntries(DIMENSIONS.map(d=>[d.id,null]))}
-function freshScenario(name="Congestión de red y degradación de servicios"){
-  return {id:uid(),name,criticality:"Alta",target:3,objective:"Detectar la degradación, identificar la dependencia causante y recuperar el servicio con seguridad.",answers:blankAnswers()};
+function freshScenario(name="Escenario personalizado de red"){
+  return {id:uid(),templateId:null,name,criticality:"Alta",target:3,objective:"Describa el resultado operacional que desea proteger o mejorar.",answers:blankAnswers()};
 }
-function freshState(){const s=freshScenario();selectedScenarioId=s.id;return {version:1,organization:"",assessor:"",date:today,scenarios:[s]}}
+function scenarioFromTemplate(template){
+  return {id:uid(),templateId:template.id,name:template.name,criticality:template.criticality,target:template.target,objective:template.objective,answers:blankAnswers()};
+}
+function freshState(){const s=scenarioFromTemplate(SCENARIO_CATALOG[0]);selectedScenarioId=s.id;return {version:2,organization:"",assessor:"",date:today,scenarios:[s]}}
 function loadState(){try{const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY));if(parsed?.scenarios?.length){selectedScenarioId=parsed.scenarios[0].id;return normalizeState(parsed)}}catch(e){}return null}
 function normalizeState(input){
-  const out={version:1,organization:String(input.organization||""),assessor:String(input.assessor||""),date:input.date||today,scenarios:[]};
-  (input.scenarios||[]).forEach(raw=>{const s=freshScenario();s.id=String(raw.id||uid());s.name=String(raw.name||"Escenario sin nombre");s.criticality=["Alta","Media","Baja"].includes(raw.criticality)?raw.criticality:"Media";s.target=Math.min(5,Math.max(1,Number(raw.target)||3));s.objective=String(raw.objective||"");s.answers=blankAnswers();DIMENSIONS.forEach(d=>{const v=raw.answers?.[d.id];s.answers[d.id]=v===null||v===undefined?null:Math.min(5,Math.max(0,Number(v))) });out.scenarios.push(s)});
+  const out={version:2,organization:String(input.organization||""),assessor:String(input.assessor||""),date:input.date||today,scenarios:[]};
+  (input.scenarios||[]).forEach(raw=>{const s=freshScenario();s.id=String(raw.id||uid());s.templateId=SCENARIO_CATALOG.some(t=>t.id===raw.templateId)?raw.templateId:null;s.name=String(raw.name||"Escenario sin nombre");s.criticality=["Alta","Media","Baja"].includes(raw.criticality)?raw.criticality:"Media";s.target=Math.min(5,Math.max(1,Number(raw.target)||3));s.objective=String(raw.objective||"");s.answers=blankAnswers();DIMENSIONS.forEach(d=>{const v=raw.answers?.[d.id];s.answers[d.id]=v===null||v===undefined?null:Math.min(5,Math.max(0,Number(v))) });out.scenarios.push(s)});
   if(!out.scenarios.length)out.scenarios.push(freshScenario());return out;
 }
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
@@ -78,8 +92,49 @@ function renderMeta(){
   document.querySelector("#assessmentDate").value=state.date;
 }
 function renderSidebar(){
+  document.querySelector("#scenarioTotal").textContent=state.scenarios.length;
   const box=document.querySelector("#scenarioList");box.innerHTML=state.scenarios.map(s=>{const r=calculate(s);return `<button class="scenario-tab ${s.id===selectedScenarioId?"active":""}" data-id="${s.id}" type="button"><b>${esc(short(s.name,34))}</b><span>${s.criticality} · ${r.count}/10 <i class="mini-level">${r.level===null?"Pendiente":"L"+r.level}</i></span></button>`}).join("");
   box.querySelectorAll("button").forEach(btn=>btn.onclick=()=>{selectedScenarioId=btn.dataset.id;renderAll()});
+}
+
+function renderCatalog(){
+  const existing=new Set(state.scenarios.map(s=>s.templateId).filter(Boolean));
+  const box=document.querySelector("#catalogList");
+  box.innerHTML=SCENARIO_CATALOG.map((item,index)=>{
+    const added=existing.has(item.id);
+    return `<label class="catalog-item ${added?"catalog-added":""}"><input class="catalog-check" type="checkbox" value="${item.id}" ${added?"disabled":""}><span class="catalog-index">${String(index+1).padStart(2,"0")}</span><span class="catalog-copy"><b>${esc(item.name)}</b><small>${esc(item.description)}</small><span class="signal-tags">${item.signals.map(x=>`<i>${esc(x)}</i>`).join("")}</span></span><strong>${added?"Agregado":"L"+item.target}</strong></label>`;
+  }).join("");
+  box.querySelectorAll(".catalog-check").forEach(input=>input.addEventListener("change",updateCatalogStatus));
+  document.querySelector("#catalogSelectAll").checked=false;
+  updateCatalogStatus();
+}
+
+function updateCatalogStatus(){
+  const checked=[...document.querySelectorAll(".catalog-check:checked")];
+  document.querySelector("#catalogStatus").textContent=`${checked.length} seleccionado${checked.length===1?"":"s"}`;
+  document.querySelector("#btnAddCatalog").disabled=!checked.length;
+}
+
+function openCatalog(){
+  renderCatalog();
+  document.querySelector("#catalogModal").classList.add("open");
+  document.querySelector("#catalogModal").setAttribute("aria-hidden","false");
+  document.body.classList.add("modal-open");
+}
+
+function closeCatalog(){
+  document.querySelector("#catalogModal").classList.remove("open");
+  document.querySelector("#catalogModal").setAttribute("aria-hidden","true");
+  document.body.classList.remove("modal-open");
+}
+
+function addCatalogScenarios(){
+  const ids=[...document.querySelectorAll(".catalog-check:checked")].map(x=>x.value);
+  if(!ids.length)return;
+  const added=ids.map(id=>scenarioFromTemplate(SCENARIO_CATALOG.find(x=>x.id===id)));
+  state.scenarios.push(...added);
+  selectedScenarioId=added[0].id;
+  closeCatalog();renderAll();toast(`${added.length} escenario${added.length===1?" agregado":"s agregados"}`);
 }
 function renderEditor(){
   const s=active();if(!s)return;
@@ -153,6 +208,13 @@ function bind(){
   [["scenarioName","name"],["scenarioCriticality","criticality"],["scenarioTarget","target"],["scenarioObjective","objective"]].forEach(([id,key])=>document.querySelector("#"+id).addEventListener("input",e=>{active()[key]=key==="target"?Number(e.target.value):e.target.value;renderSidebar();renderResults();save()}));
   document.querySelector("#radarScenario").addEventListener("change",renderRadar);
   document.querySelector("#btnAddScenario").onclick=()=>{const s=freshScenario("Nuevo escenario de red");state.scenarios.push(s);selectedScenarioId=s.id;renderAll();toast("Escenario agregado")};
+  document.querySelector("#btnOpenCatalog").onclick=openCatalog;
+  document.querySelector("#btnCloseCatalog").onclick=closeCatalog;
+  document.querySelector("#btnCancelCatalog").onclick=closeCatalog;
+  document.querySelector("#btnAddCatalog").onclick=addCatalogScenarios;
+  document.querySelector("#catalogModal").addEventListener("click",e=>{if(e.target.id==="catalogModal")closeCatalog()});
+  document.querySelector("#catalogSelectAll").addEventListener("change",e=>{document.querySelectorAll(".catalog-check:not(:disabled)").forEach(x=>x.checked=e.target.checked);updateCatalogStatus()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCatalog()});
   document.querySelector("#btnDeleteScenario").onclick=()=>{if(state.scenarios.length<2)return;if(!confirm("¿Eliminar este escenario y sus respuestas?"))return;state.scenarios=state.scenarios.filter(s=>s.id!==selectedScenarioId);selectedScenarioId=state.scenarios[0].id;renderAll();toast("Escenario eliminado")};
   document.querySelector("#btnReset").onclick=()=>{if(!confirm("¿Reiniciar toda la evaluación?"))return;state=freshState();renderAll();toast("Evaluación reiniciada")};
   document.querySelector("#btnPrint").onclick=()=>window.print();
@@ -166,7 +228,7 @@ function exportJSON(){
 function importJSON(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{state=normalizeState(JSON.parse(reader.result));selectedScenarioId=state.scenarios[0].id;renderAll();toast("Evaluación importada")}catch(err){alert("El archivo no contiene una evaluación válida.")}};reader.readAsText(file);e.target.value=""}
 function loadDemo(){
   const make=(name,crit,target,obj,vals)=>{const s=freshScenario(name);s.criticality=crit;s.target=target;s.objective=obj;DIMENSIONS.forEach((d,i)=>s.answers[d.id]=vals[i]);return s};
-  state={version:1,organization:"Laboratorio de Observabilidad de Redes",assessor:"Equipo de Operaciones",date:today,scenarios:[
+  state={version:2,organization:"Laboratorio de Observabilidad de Redes",assessor:"Equipo de Operaciones",date:today,scenarios:[
     make("Congestión de red y API lenta","Alta",3,"Correlacionar RTT, errores HTTP y dependencia de base de datos.",[3,3,3,3,3,3,2,1,1,2]),
     make("Degradación Wi‑Fi en hora pico","Media",3,"Reducir tiempo de detección y aislar interferencia o saturación.",[2,2,2,2,1,1,1,0,0,1]),
     make("Caída de interfaz WAN crítica","Alta",4,"Detectar, conmutar y validar recuperación dentro del SLO.",[4,3,4,3,3,3,3,3,2,3])
